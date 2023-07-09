@@ -7,6 +7,7 @@ Letícia Barbosa Neves*/
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 // Definição da struct que conterá cada produto
 
@@ -40,7 +41,7 @@ void InsereProduto() {
 void ConsultaEstoque(FILE *estoque) {
     char c;
     estoque = fopen("estoque.txt", "r");
-    while (fscanf(estoque, %c, &c) != EOF) {
+    while (fscanf(estoque, "%c", &c) != EOF) {
         printf("%c", c);
     }
 }
@@ -51,26 +52,46 @@ void ConsultaSaldo(void) {
 
 
 int main () {
-    FILE *estoque;
-    FILE *saldo;
-    int TamanhoEstoque;
+    FILE *ArquivoEstoque;
+    FILE *ArquivoSaldo;
+    int TamanhoEstoque = 0;
+    float Saldo;
 
 
 // Verifica se o arquivo do estoque já existe
-    if ((estoque = fopen("estoque.txt", "r")) == 0) {
+    if ((ArquivoEstoque = fopen("estoque.bin", "rb")) == 0) {
 
-// Inserir tamanho do estoque
-        printf("Digite o tamanho do estoque: ");
+// Se não existir, inserir tamanho do estoque
         scanf("%d", &TamanhoEstoque);
-        estoque = fopen("estoque.txt", "w");
-        produto *EstoqueProdutos;
-        EstoqueProdutos = (produto *) malloc(TamanhoEstoque * sizeof(produto));
-        fclose(estoque);
+        scanf("%f", &Saldo);
+        TamanhoEstoque = 0;
+        ArquivoEstoque = fopen("estoque.bin", "wb");
+        fclose(ArquivoEstoque);
+        } else {
+// Se existe, lê o saldo armazenado no arquivo e o tamanho, que são os dois primeiros valores (float e inteiro)
+            fscanf(ArquivoEstoque, "%f", &Saldo);
+            fscanf(ArquivoEstoque, "%d", &TamanhoEstoque);
+            close(ArquivoEstoque);
+            printf("Saldo: %f, TamanhoEstoque: %d\n", Saldo, TamanhoEstoque);
+            }
+
+
+// É criado um array de ponteiros para produto, e tudo é alocado dinamicamente
+        produto **EstoqueProdutos;
+        EstoqueProdutos = (produto **) malloc(TamanhoEstoque * sizeof(produto *));
+        for (int i = 0; i < TamanhoEstoque; i++) {
+            EstoqueProdutos[i] = (produto *) malloc(sizeof(produto));
+        }
+
+// É declarada a variável que possibilitará a contagem dos códigos de cada produto, a qual será acrescentada
+// em 1 sempre que um produto novo for inserido
+        int NumCodigoAtual = 0;
+
         
-        saldo = fopen("saldo.txt", "w");
-        fclose(saldo);
-        float saldo = 100;
-    }
+
+
+        
+    
 
 
     char entrada[3];
@@ -101,7 +122,7 @@ int main () {
         }
 
         if (strcmp(entrada, "CE") == 0) {
-            ConsultaEstoque(&estoque);
+            ConsultaEstoque(&ArquivoEstoque);
         }
 
         if (strcmp(entrada, "CS") == 0) {
@@ -116,6 +137,9 @@ int main () {
 
 // para cada comando, uma função é chamada, realizando a leitura específica do comando
     }
+
+    ArquivoEstoque = fopen("estoque.bin", "wb");
+    fprintf(ArquivoEstoque, "%f%d", Saldo, TamanhoEstoque);
 
     return 0;
 }
