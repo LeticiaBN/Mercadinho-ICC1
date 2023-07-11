@@ -46,8 +46,10 @@ void InsereProduto(produto ***p, int *TamanhoEstoque) {
 // Função Aumenta Estoque (AE_<código>_<quantidade>)
 void AumentaEstoque(produto ***p) {
     int CodigoAlterar;
+    int QuantidadeAdicionar;
     scanf("%d", &CodigoAlterar);
-    scanf("%d", &(*p)[CodigoAlterar]->quantidade);
+    scanf("%d", &QuantidadeAdicionar);
+    ((*p)[CodigoAlterar]->quantidade) += QuantidadeAdicionar;
 }
 
 // Função Modifica Preço (MP_<código>_<preço>)
@@ -60,6 +62,7 @@ void ModificaPreco(produto ***p) {
 // Função Venda (VE_<código>_<código>_..._<código>_<-1>)
 void Venda(produto ***p, float *Saldo) {
     int CodigoAlterar;
+    float Total = 0;
 
     while(1) {
         scanf("%d", &CodigoAlterar);
@@ -67,17 +70,25 @@ void Venda(produto ***p, float *Saldo) {
         if (CodigoAlterar == -1) {
             break;
         }
-
+        if (((*p)[CodigoAlterar]->quantidade) == 0) {
+            break;
+        }
         ((*p)[CodigoAlterar]->quantidade)--;
         *Saldo += ((*p)[CodigoAlterar]->preco);
+
+        Total += ((*p)[CodigoAlterar]->preco);
+
+        printf("%s %.2f\n", (*p)[CodigoAlterar]->nome, (*p)[CodigoAlterar]->preco);
     }
+    printf("Total: %.2f\n", Total);
+    printf("--------------------------------------------------\n");
+
 }
 
 // Função Consulta Estoque (CE)
 void ConsultaEstoque(produto ***p, int *TamanhoEstoque) {
-    printf("--------------------------------------------------\n");
     for (int i = 0; i < *TamanhoEstoque; i++) {
-        printf("%d %s %d %.2f\n", (*p)[i]->codigo, (*p)[i]->nome, (*p)[i]->quantidade, (*p)[i]->preco);
+        printf("%d %s %d\n", (*p)[i]->codigo, (*p)[i]->nome, (*p)[i]->quantidade);
     }
     printf("--------------------------------------------------\n");
 
@@ -85,6 +96,8 @@ void ConsultaEstoque(produto ***p, int *TamanhoEstoque) {
 // Função Consulta Saldo (CS)
 void ConsultaSaldo(float Saldo) {
     printf("Saldo: %.2f\n", Saldo);
+    printf("--------------------------------------------------\n");
+
 }
 // Função Finaliza a execução (FE)
 
