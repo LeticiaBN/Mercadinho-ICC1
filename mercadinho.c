@@ -139,7 +139,6 @@ int main () {
                 fscanf(ArquivoEstoque, "%d", &EstoqueProdutos[i]->quantidade);
                 fscanf(ArquivoEstoque, "%f", &EstoqueProdutos[i]->preco);
             }
-            printf("Tamanho estoque: %d, Saldo: %.2f\n", TamanhoEstoque, Saldo);
         }
 
 
