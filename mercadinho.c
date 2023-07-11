@@ -13,7 +13,7 @@ Letícia Barbosa Neves*/
 
 struct Produto {
     int codigo;
-    char nome[21];
+    char nome[41];
     int quantidade;
     float preco;
 };
@@ -24,10 +24,11 @@ typedef struct Produto produto;
 
 
 // Função Insere Produto (IP_<nome>_<quantidade>_<preço>)
-void InsereProduto(produto ***p, int TamanhoEstoque) {
-    (*p) = (produto **) realloc(*p, (TamanhoEstoque * sizeof(produto *)));
-    (*p)[TamanhoEstoque - 1] = (produto *) malloc(sizeof(produto));
-    char Nome[21];
+void InsereProduto(produto ***p, int *TamanhoEstoque) {
+    (*TamanhoEstoque)++;
+    (*p) = (produto **) realloc(*p, (*TamanhoEstoque * sizeof(produto *)));
+    (*p)[*TamanhoEstoque - 1] = (produto *) malloc(sizeof(produto));
+    char Nome[41];
     int Quantidade;
     float Preco;
 
@@ -35,10 +36,10 @@ void InsereProduto(produto ***p, int TamanhoEstoque) {
     scanf("%s %d %f", Nome, &Quantidade, &Preco);
 
     // Preenchimento dos dados desse produto no vetor dinamicamente alocado de produtos
-    (*p)[TamanhoEstoque - 1]->codigo = TamanhoEstoque - 1;
-    strcpy((*p)[TamanhoEstoque - 1]->nome, Nome);
-    (*p)[TamanhoEstoque - 1]->quantidade = Quantidade;
-    (*p)[TamanhoEstoque - 1]->preco = Preco;
+    (*p)[*TamanhoEstoque - 1]->codigo = (*TamanhoEstoque - 1);
+    strcpy((*p)[*TamanhoEstoque - 1]->nome, Nome);
+    (*p)[*TamanhoEstoque - 1]->quantidade = Quantidade;
+    (*p)[*TamanhoEstoque - 1]->preco = Preco;
 
 
 }
@@ -56,8 +57,8 @@ void AumentaEstoque(produto ***p) {
 // Função Venda (VE_<código>_<código>_..._<código>_<-1>)
 
 // Função Consulta Estoque (CE)
-void ConsultaEstoque(produto ***p, int TamanhoEstoque) {
-    for (int i = 0; i < TamanhoEstoque; i++) {
+void ConsultaEstoque(produto ***p, int *TamanhoEstoque) {
+    for (int i = 0; i < *TamanhoEstoque; i++) {
         printf("%d %s %d %.2f\n", (*p)[i]->codigo, (*p)[i]->nome, (*p)[i]->quantidade, (*p)[i]->preco);
     }
 }
@@ -69,7 +70,7 @@ void ConsultaSaldo(void) {
 
 int main () {
     FILE *ArquivoEstoque;
-    int TamanhoEstoque = 0;
+    int TamanhoEstoque;
     float Saldo;
 
     produto **EstoqueProdutos;
@@ -128,8 +129,7 @@ int main () {
 // série de if para saber qual o comando a ser realizado
 
         if (strcmp(entrada, "IP") == 0) {
-            TamanhoEstoque++;
-            InsereProduto(&EstoqueProdutos, TamanhoEstoque);
+            InsereProduto(&EstoqueProdutos, &TamanhoEstoque);
         }
 
         if (strcmp(entrada, "AE") == 0) {
@@ -146,7 +146,7 @@ int main () {
         */
 
         if (strcmp(entrada, "CE") == 0) {
-            ConsultaEstoque(&EstoqueProdutos, TamanhoEstoque);
+            ConsultaEstoque(&EstoqueProdutos, &TamanhoEstoque);
         }
 /*
         if (strcmp(entrada, "CS") == 0) {
