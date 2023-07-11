@@ -15,7 +15,7 @@ struct Produto {
     int codigo;
     char nome[21];
     int quantidade;
-    double preco;
+    float preco;
 };
 typedef struct Produto produto;
 
@@ -24,25 +24,41 @@ typedef struct Produto produto;
 
 
 // Função Insere Produto (IP_<nome>_<quantidade>_<preço>)
-void InsereProduto() {
-    char nome[21];
-    int quantidade;
-    float preco;
-    scanf("%s %d %f", nome, &quantidade, &preco);
+void InsereProduto(produto ***p, int TamanhoEstoque) {
+    (*p) = (produto **) realloc(*p, (TamanhoEstoque * sizeof(produto *)));
+    (*p)[TamanhoEstoque - 1] = (produto *) malloc(sizeof(produto));
+    char Nome[21];
+    int Quantidade;
+    float Preco;
+
+    // Leitura em ordem das variáveis de cada produto
+    scanf("%s %d %f", Nome, &Quantidade, &Preco);
+
+    // Preenchimento dos dados desse produto no vetor dinamicamente alocado de produtos
+    (*p)[TamanhoEstoque - 1]->codigo = TamanhoEstoque - 1;
+    strcpy((*p)[TamanhoEstoque - 1]->nome, Nome);
+    (*p)[TamanhoEstoque - 1]->quantidade = Quantidade;
+    (*p)[TamanhoEstoque - 1]->preco = Preco;
+
 
 }
 // Função Aumenta Estoque (AE_<código>_<quantidade>)
+void AumentaEstoque(produto ***p) {
+    int CodigoAlterar;
+    int NovoEstoque;
+    scanf("%d", &CodigoAlterar);
+    scanf("%d", &NovoEstoque);
+    (*p)[CodigoAlterar]->quantidade = NovoEstoque;
+}
 
 // Função Modifica Preço (MP_<código>_<preço>)
 
 // Função Venda (VE_<código>_<código>_..._<código>_<-1>)
 
 // Função Consulta Estoque (CE)
-void ConsultaEstoque(FILE *estoque) {
-    char c;
-    estoque = fopen("estoque.txt", "r");
-    while (fscanf(estoque, "%c", &c) != EOF) {
-        printf("%c", c);
+void ConsultaEstoque(produto ***p, int TamanhoEstoque) {
+    for (int i = 0; i < TamanhoEstoque; i++) {
+        printf("%d %s %d %.2f\n", (*p)[i]->codigo, (*p)[i]->nome, (*p)[i]->quantidade, (*p)[i]->preco);
     }
 }
 // Função Consulta Saldo (CS)
@@ -53,9 +69,10 @@ void ConsultaSaldo(void) {
 
 int main () {
     FILE *ArquivoEstoque;
-    FILE *ArquivoSaldo;
     int TamanhoEstoque = 0;
     float Saldo;
+
+    produto **EstoqueProdutos;
 
 
 // Verifica se o arquivo do estoque já existe
@@ -63,35 +80,40 @@ int main () {
 
 // Se não existir, inserir tamanho do estoque
         scanf("%d", &TamanhoEstoque);
-        scanf("%f", &Saldo);
         TamanhoEstoque = 0;
+        scanf("%f", &Saldo);
         ArquivoEstoque = fopen("estoque.bin", "wb");
         fclose(ArquivoEstoque);
-        } else {
-// Se existe, lê o saldo armazenado no arquivo e o tamanho, que são os dois primeiros valores (float e inteiro)
-            fscanf(ArquivoEstoque, "%f", &Saldo);
-            fscanf(ArquivoEstoque, "%d", &TamanhoEstoque);
-            close(ArquivoEstoque);
-            printf("Saldo: %f, TamanhoEstoque: %d\n", Saldo, TamanhoEstoque);
-            }
-
-
-// É criado um array de ponteiros para produto, e tudo é alocado dinamicamente
-        produto **EstoqueProdutos;
+        // É criado um array de ponteiros para produto, e tudo é alocado dinamicamente
         EstoqueProdutos = (produto **) malloc(TamanhoEstoque * sizeof(produto *));
         for (int i = 0; i < TamanhoEstoque; i++) {
             EstoqueProdutos[i] = (produto *) malloc(sizeof(produto));
         }
+    } else {
+// Se existe, lê o saldo armazenado no arquivo e o tamanho, que são os dois primeiros valores (float e inteiro)
+            fscanf(ArquivoEstoque, "%d", &TamanhoEstoque);
+            fscanf(ArquivoEstoque, "%f", &Saldo);
+            // É criado um array de ponteiros para produto, e tudo é alocado dinamicamente
+            EstoqueProdutos = (produto **) malloc(TamanhoEstoque * sizeof(produto *));
+            for (int i = 0; i < TamanhoEstoque; i++) {
+                EstoqueProdutos[i] = (produto *) malloc(sizeof(produto));
+            }
+            for (int i = 0; i < TamanhoEstoque; i++) {
+                fscanf(ArquivoEstoque, "%d", &EstoqueProdutos[i]->codigo);
+                fscanf(ArquivoEstoque, "%s", EstoqueProdutos[i]->nome);
+                fscanf(ArquivoEstoque, "%d", &EstoqueProdutos[i]->quantidade);
+                fscanf(ArquivoEstoque, "%f", &EstoqueProdutos[i]->preco);
+            }
+            printf("Tamanho estoque: %d, Saldo: %.2f\n", TamanhoEstoque, Saldo);
+        }
 
-// É declarada a variável que possibilitará a contagem dos códigos de cada produto, a qual será acrescentada
-// em 1 sempre que um produto novo for inserido
-        int NumCodigoAtual = 0;
+
+
 
         
 
 
         
-    
 
 
     char entrada[3];
@@ -106,13 +128,14 @@ int main () {
 // série de if para saber qual o comando a ser realizado
 
         if (strcmp(entrada, "IP") == 0) {
-            InsereProduto();
+            TamanhoEstoque++;
+            InsereProduto(&EstoqueProdutos, TamanhoEstoque);
         }
 
         if (strcmp(entrada, "AE") == 0) {
-            AumentaEstoque();
+            AumentaEstoque(&EstoqueProdutos);
         }
-
+/*
         if (strcmp(entrada, "MP") == 0) {
             ModificaPreco();
         }
@@ -120,15 +143,16 @@ int main () {
         if (strcmp(entrada, "VE") == 0) {
             Venda();
         }
+        */
 
         if (strcmp(entrada, "CE") == 0) {
-            ConsultaEstoque(&ArquivoEstoque);
+            ConsultaEstoque(&EstoqueProdutos, TamanhoEstoque);
         }
-
+/*
         if (strcmp(entrada, "CS") == 0) {
             ConsultaSaldo();
         }
-
+*/
         if (strcmp(entrada, "FE") == 0) {
             break;
         }
@@ -139,7 +163,18 @@ int main () {
     }
 
     ArquivoEstoque = fopen("estoque.bin", "wb");
-    fprintf(ArquivoEstoque, "%f%d", Saldo, TamanhoEstoque);
+    fprintf(ArquivoEstoque, "%d %f ", TamanhoEstoque, Saldo);
 
+
+    for (int i = 0; i < TamanhoEstoque; i++) {
+        fprintf(ArquivoEstoque, "%d %s %d %f ", EstoqueProdutos[i]->codigo, EstoqueProdutos[i]->nome, EstoqueProdutos[i]->quantidade, EstoqueProdutos[i]->preco);
+    }
+    fclose(ArquivoEstoque);
+
+    for (int i = 0; i < TamanhoEstoque; i++) {
+        free(EstoqueProdutos[i]);
+    }
+    free(EstoqueProdutos);
+    free(ArquivoEstoque);
     return 0;
 }
