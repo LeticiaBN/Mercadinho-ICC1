@@ -71,7 +71,7 @@ void Venda(produto ***p, float *Saldo) {
             break;
         }
         if (((*p)[CodigoAlterar]->quantidade) == 0) {
-            break;
+            continue;
         }
         ((*p)[CodigoAlterar]->quantidade)--;
         *Saldo += ((*p)[CodigoAlterar]->preco);
