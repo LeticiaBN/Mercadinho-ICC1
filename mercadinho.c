@@ -1,7 +1,8 @@
 /*INTEGRANTES
-João Pedro Alves Notari Godoy
-Pedro Louro Fernandes
-Letícia Barbosa Neves*/
+João Pedro Alves Notari Godoy n°USP 14582076
+Pedro Louro Fernandes n°USP 13572446
+Letícia Barbosa Neves n°USP 14588659
+*/
 
 // SISTEMA DE MERCADO
 
@@ -209,5 +210,6 @@ int main () {
     }
     free(EstoqueProdutos);
     free(ArquivoEstoque);
+    
     return 0;
 }
