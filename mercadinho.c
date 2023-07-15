@@ -1,6 +1,6 @@
 /*INTEGRANTES
 João Pedro Alves Notari Godoy n°USP 14582076
-Pedro Louro Fernandes n°USP 13572446
+Pedro Louro Fernandes n°USP 13672446
 Letícia Barbosa Neves n°USP 14588659
 */
 
